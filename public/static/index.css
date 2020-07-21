@@ -1,0 +1,166 @@
+.container{
+  display: flex;
+}
+.user-panel{
+  width: 240px;
+}
+.chat-panel{
+  width: 600px;
+  border: 1px solid #eee;
+  position: relative;
+}
+.select{
+display: flex;
+display: -webkit-flex;
+justify-content: space-between;
+flex-direction: row;
+flex-wrap: wrap;
+width: 300px;
+}
+.user-list-wrap{
+width: 100%;
+}
+.chat-group-list{
+margin-top: 15px;
+}
+.user-item, .chat-group-item{
+width: 100%;
+position: relative;
+}
+.chat-group-item {
+  display: flex;
+  justify-content: space-between;
+}
+.circle{
+position: absolute;
+top: 0;
+left: 0;
+width: 18px;
+height: 18px;
+line-height: 18px;
+text-align: center;
+font-size: 12px;
+ -webkit-border-radius: 50%;
+ -moz-border-radius: 50%;
+border-radius: 50%;
+background-color: red;
+color: #fff;
+}
+.wrap-box{
+  height: 100%;
+}
+.wrap-box .name-info{
+  min-height: 30px;
+  font-size: 18px;
+  padding-left: 15px;
+}
+.message-box, .group-chat-box{
+  background-color: rgb(245, 245, 245);
+}
+.box{
+  width: 600px;
+  height: 260px;
+  border: 1px solid #eee;
+  overflow-y: scroll;
+  text-align: center;
+}
+.default-bg{
+  background-color: #eee;
+  font-size: 14px;
+  text-align: center;
+  height: 350px;
+  line-height: 350px;
+  color: #908d8d;
+}
+.inp-box{
+  width: 600px;
+  height: 50px;
+  outline: none;
+}
+.btn{
+  float: right;
+}
+.msg-box{
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+.msg{
+  background-color: #fff;
+  padding: 5px;
+  max-width: 220px;
+  text-align: left;
+}
+.msg-box.right .msg{
+  margin-right: 10px;
+}
+.msg-box.left .msg{
+  margin-left: 10px;
+}
+.right{
+  justify-content: flex-end;
+}
+
+.tab{
+  display: flex;
+  margin-bottom: 15px;
+}
+.tab-box{
+  position: relative;
+}
+.tab-item{
+  width: 80px;
+  padding-left: 20px;
+  position: relative;
+  cursor: default;
+}
+.group-chat-info{
+  display: none;
+}
+.emoji-icon{
+  width: 25px;
+  height: 25px;
+}
+.emoji{
+  display: none;
+  position: absolute;
+  width: 600px;
+  bottom: 100px;
+  background-color: #fff;
+  padding: 15px;
+  z-index: 2;
+  box-sizing: border-box;
+}
+.emot{
+  display: none;
+  position: absolute;
+  width: 600px;
+  bottom: 100px;
+  background-color: #fff;
+  padding: 15px;
+  z-index: 2;
+  box-sizing: border-box;
+}
+.mask{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.system{
+  font-size: 12px;
+  transform: scale(0.9);
+  display: inline-block;
+  color: #fff;
+  background-color: rgb(218, 218, 218);
+   -webkit-border-radius: 15px;
+   -moz-border-radius: 15px;
+  border-radius: 15px;
+  padding: 0 5px;
+}
+.hidden{
+  display: none;
+}
