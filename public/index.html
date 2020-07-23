@@ -7,7 +7,97 @@
   <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
-  111
+  <div class="container">
+    <div class="user-panel">
+      <div id="login-wrap">
+        <input type="text" class="user-name contenteditable" placeholder="请输入用户名">
+        <div class="user-portrait">
+          <span class="tips">请选择一张图片作为头像</span>
+          <img src="" alt="" class="my-por" style="width: 60px;height: 60px;">
+        </div>
+        <div class="select" id="portrait"></div>
+        <button class="chat-btn">开始聊天</button>
+      </div>
+      
+      <div class="user-list-wrap">
+        <div class="my-info"></div>
+        <div class="tab">
+            <div class="friend-tab-box tab-box">
+                <div class="friend-tab tab-item" style="color: #308e56;" onclick="changeTab('message-wrap', 'friends-info', 0)">我的好友</div>
+                <div class="circle me-friend-tab" style="display: none;">0</div>
+            </div>
+            <div class="group-chat-tab-box tab-box">
+                <div class="group-chat-tab tab-item" onclick="changeTab('group-chat-wrap', 'group-chat-info', 1)">我的群聊</div>
+                <div class="circle me-group-chat-tab" style="display: none;">0</div>
+            </div>
+        </div>
+        <div class="friends-info info-wrapper">暂无好友</div>
+        <div class="group-chat-info info-wrapper">
+            <span>群聊室</span>
+            <button onclick="createChatGroup()">创建群聊</button>
+            <div class="select-chat-group"></div>
+            <div class="now-select">
+                <div>当前选择：</div>
+            </div>
+            <div class="create-group hidden">
+                <input class="chat-group-name-input" placeholder="群聊名称">
+                <button onclick="confirmChatGroup()">确认创建</button>
+            </div>
+            <div class="chat-group-list"></div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="chat-panel hidden">
+      <div class="message-wrap">
+          <div class="default-bg message-default">
+              <span>点击好友开始聊天吧！</span>
+          </div>
+          <div class="message-wrapper wrap-box hidden">
+              <div class="friend name-info"></div>
+              <div class="message-box box"></div>
+              <div class="input-box">
+                  <div class="send-img-box">
+                      <img class="emoji-icon" src="static/emoji.png" onclick="showEmojiBox()">
+                      <img class="emoji-icon imgBox" src="static/emoji1.png" onclick="showEmotBox()">
+                  </div>
+                  <div class="inp inp-box" contenteditable="true" placeholder="在此输入消息..."></div>
+                  <div class="btn">
+                      <span>按下Enter发送消息</span>
+                      <button class="send-message">发 送</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="group-chat-wrap">
+          <div class="default-bg group-chat-default">
+              <span>选择群聊开始聊天吧！</span>
+          </div>
+          <div class="group-chat-group-box wrap-box hidden">
+              <div class="chat-group-name name-info"></div>
+              <div class="group-chat-box box"></div>
+              <div class="input-box">
+                  <div class="send-img-box">
+                      <img class="emoji-icon" src="static/emoji.png" onclick="showEmojiBox()">
+                      <img class="emoji-icon imgBox" src="static/emoji1.png" onclick="showEmotBox()">
+                  </div>
+                  <div class="group-chat-inp inp-box" contenteditable="true" placeholder="在此输入消息..."></div>
+                  <div class="btn">
+                      <span>按下Enter发送消息</span>
+                      <button class="send-message-group-chat">发 送</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="emoji"></div>
+      <div class="emot"></div>
+      <div class="mask" onclick="hiddenBox()"></div>
+    </div>
+  </div>
 
   <!-- 加载全局io -->
   <script src="/socket.io/socket.io.js"></script>
