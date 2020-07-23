@@ -87,10 +87,26 @@ $(function () {
         console.log('receiveMsg')
       }),
       socket.on('receiveMsgGroup', data => {
-        console.log('receiveMsgGroup')
+        console.log('receiveMsgGroup', data)
+        // 
+        this.setMsgGroupJson(data)
+        if (this.tag) {
+          // 群聊面板
+          // 判断收到的是不是当前群聊的，不是就标记红点，是就绘制聊天内容
+          if (data.roomId === this.sendChatGroup) {
+            this.drawChatGroupMsgList()
+          } else {
+            $('.me_' + data.roomId).html(parseInt($('.me_' + data.roomId).html()) + 1).css('display', 'block')
+          }
+        } else {
+          // 当前在个人聊天页面，群聊提示新消息  并且群聊列表中对应群聊提示新消息
+          $('.me-group-chat-tab').html(parseInt($('.me-group-chat-tab').html()) + 1).css('display', 'block')
+
+          $('.me_' + data.roomId).html(parseInt($('.me_'+ data.roomId)) + 1).css('display', 'block')
+        }
       })
-      // chat group
-      socket.on('refreshChatGroupList', chatGroup => {
+      // 把新创建的组加入群聊组列表
+      socket.on('addGroupToChatGroupList', chatGroup => {
         this.chatGroupList.push(chatGroup)
         this.drawChatGroupList()
       })
@@ -102,6 +118,7 @@ $(function () {
         })
       })
     },
+    // 单发送消息
     sendMessage () {
       if (!this.sendFriend) {
         alert('请选择好友!')
@@ -118,9 +135,11 @@ $(function () {
         this.drawMessageList()
       }
     },
+    // 群聊发送消息
     sendMessageGroup () {
+      console.log(this.sendChatGroup)
       let info = {
-        roomId: this.sendChatGroup,
+        roomId: this.sendChatGroup, // 原型里用this调用
         sendId: this.id,
         userName: this.userName,
         img: this.userImg,
@@ -148,7 +167,20 @@ $(function () {
     setMyInfo () {
       $('.my-info').append(`<div class="user-item" style="border-bottom: 1px solid #eee;margin-bottom: 30px;"><span>用户：${this.userName}</span></div>`)
     },
-   
+    setMessageJson (data) {
+      if (this.messageJson[data.sendId]) {
+        this.messageJson[data.sendId].push(data)
+      } else {
+        this.messageJson[data.sendId] = [data]
+      }
+    },
+    setMsgGroupJson (data) {
+      if (this.msgGroupJson[data.roomId]) {
+        this.msgGroupJson[data.roomId].push(data)
+      } else {
+        this.msgGroupJson[data.roomId] = [data]
+      }
+    },
     drawMessageList () {
       let msg = ''
 
@@ -166,7 +198,7 @@ $(function () {
             <div class="chat-group-item" onclick="changeChatGroup(this)" style="border-bottom: 1px solid #eee;margin-bottom: 30px;">
               <span style="padding-left: 20px;">${item.chatGroupName}</span>
               <input type="hidden" value="${item.roomId}">
-              <div class="circle me_${item.roomId}" style="display: none;>0</div>
+              <div class="circle me_${item.roomId}" style="display: none;">0</div>
               <button onclick="exitGroupRoom('${item.roomId}')">退出</button>
             </div>
           `
@@ -183,6 +215,7 @@ $(function () {
     },
 
     drawChatGroupMsgList () {
+      console.log('drawChatGroupMsgList', this.msgGroupJson)
       if (!this.msgGroupJson[this.sendChatGroup]) {
         return
       }
@@ -300,15 +333,15 @@ $(function () {
 
     $('.group-chat-box').html('')
     $('.group-chat.box').scrollTop(0)
-
-    this.sendChatGroup = ev.children[1].value
-
-    // this.drawChatGroupMsgList()
-    console.log(chatInstance)
+    console.log(ev)
+    // 赋值给 chatInstance对象的属性
+    chatInstance.sendChatGroup = ev.children[1].value
+    console.log(chatInstance.sendChatGroup)
+    // console.log(chatInstance)
     chatInstance.drawChatGroupMsgList()
 
-    $('.me_' + this.sendChatGroup).html(0)
-    $('.me_' + this.sendChatGroup).css('display', 'none')
+    $('.me_' + chatInstance.sendChatGroup).html(0)
+    $('.me_' + chatInstance.sendChatGroup).css('display', 'none')
   }
 
   window.confirmChatGroup = function () {

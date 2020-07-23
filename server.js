@@ -22,16 +22,18 @@ io.on('connection', socket => {
   })
 
   socket.on('sendMsgGroup', data => {
+    console.log('server sendMsgGroup.', data)
     socket.to(data.roomId).emit('receiveMsgGroup', data)
   })
 
   // 创建群聊
   socket.on('createChatGroup', data => {
-    console.log('server createChatGroup')
+    console.log('server createChatGroup', data)
     socket.join(data.roomId)
     chatGroupList[data.roomId] = data
+    // 通知每一个组成员
     data.member.forEach(item => {
-      io.to(item.id).emit('refreshChatGroupList', data)
+      io.to(item.id).emit('addGroupToChatGroupList', data)
       io.to(item.id).emit('createChatGroup', data)
     })
   })
