@@ -59,7 +59,10 @@ io.on('connection', socket => {
   
   // 断开连接时
   socket.on('disconnect', () => {
-
+    chatGroupList = []
+    userList = userList.filter(item => item.id !== socket.id)
+    // 通知其他人
+    socket.broadcast.emit('quit', socket.id)
   })
 
   

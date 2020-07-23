@@ -83,6 +83,12 @@ $(function () {
         this.userList = userList
         this.drawUserList()
       })
+
+      socket.on('quit', socketId => {
+        this.userList = this.userList.filter(item => item.id !== socketId)
+        this.drawUserList()
+      })
+
       socket.on('receiveMsg', data => {
         console.log('receiveMsg')
       }),
@@ -158,11 +164,17 @@ $(function () {
     drawUserList () {
       let str = ''
       this.userList.forEach(item => {
-        str +=`<div class="user-item friend-item" onclick="changeChat(this)">
-          <span>${item.userName} ${item.id}</span>
-        </div>`
+        // 在列表里显示其他用户
+        if (item.id !== this.id) {
+            str +=`<div class="user-item friend-item" onclick="changeChat(this)">
+              <span>${item.userName} ${item.id}</span>
+            </div>`
+        }
       })
-      $('.friends-info').append(str)
+      $('.friends-info').html(str)
+    },
+    changeChat () {
+      console.log('changechat')
     },
     setMyInfo () {
       $('.my-info').append(`<div class="user-item" style="border-bottom: 1px solid #eee;margin-bottom: 30px;"><span>用户：${this.userName}</span></div>`)
@@ -363,9 +375,13 @@ $(function () {
     $('.chat-group-name-input').val('')
     chatInstance.chatGroupArr = []
   }
+  
+  // html中调用的方法将property里的函数再封装一遍供外部调用
+  window.changeChat = function (ev) {
+    chatInstance.changeChat(ev)
+  }
 
-  // js调用函数
-  function exitGroupRoom (roomId) {
+  window.exitGroupRoom = function (roomId) {
     console.log('exitGroupRoom', roomId)
   }
   // common functions end
