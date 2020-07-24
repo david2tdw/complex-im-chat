@@ -191,7 +191,7 @@ $(function () {
           id: this.sendFriend,
           userName: this.userName,
           img: this.userImg,
-          msg: $('.inp').text()
+          msg: $('.inp').html(), // 内容包含表情 要不能使用text()方法
         }
         socket.emit('sendMsg', info)
         // todo
