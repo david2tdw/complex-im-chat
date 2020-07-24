@@ -604,13 +604,39 @@ $(function () {
       $('.emot').append(`<img src="static/emoticon/emot/${emot[i]}" style="width:30px;height:30px;" />`)
     }
   }
+
+  // 通过ajax方法去后台请求表情图片
+  function requestPictures () {
+    $.ajax({
+      type: 'get',
+      url: '/loadImg',
+      success: function ({data}) {
+        // console.log(data)
+        let emoji = data.emoji
+        let portrait = data.portrait
+        let emot = data.emot
+
+        emoji.forEach(item => {
+          $('.emoji').append(`<img src="static/emoticon/emoji/${item}" style="width:30px;height:30px;" />`)
+        })
+        portrait.forEach(item => {
+          $('#portrait').append(`<img src="static/portrait/${item}"  style="width: 60px;height: 60px;" />`)
+        })
+        emot.forEach(item => {
+          $('.emot').append(`<img src="static/emoticon/emot/${item}" style="width:30px;height:30px;" />`)
+        })
+      }
+    })
+  }
+
   // init object
   let chatInstance = new Chat()
   chatInstance.init()
   
-  initPortrait()
-  initEmoji()
-  initEmot()
+  // initPortrait()
+  // initEmoji()
+  // initEmot()
+  requestPictures()
 })
 
 // 直接调用函数写在jquery外面 或者window.funcName = function () {}, 写在jquery里面

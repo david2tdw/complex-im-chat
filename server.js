@@ -1,3 +1,4 @@
+const fs = require('fs')
 const express = require('express')
 const app = express()
 const server = require('http').Server(app)
@@ -10,6 +11,31 @@ app.use('/', express.static(__dirname + '/public' ))
 let userList = []
 let chatGroupList = []
 
+// 后台接口，读取本地图片资源
+let portrait = fs.readdirSync('./public/static/portrait')
+let emoji = fs.readdirSync('./public/static/emoticon/emoji')
+let emot = fs.readdirSync('./public/static/emoticon/emot')
+
+app.get('*', (req, res) => {
+  console.log(req.url)
+  const assetsType = req.url.split('/')[1]
+  if (assetsType === 'loadImg') {
+    res.send({
+      code: 0,
+      data: {
+        portrait,
+        emoji,
+        emot
+      },
+      msg: '操作成功'
+    })
+  }
+})
+
+
+
+
+// socket 通信
 io.on('connection', socket => {
   console.log('server connected.')
 
