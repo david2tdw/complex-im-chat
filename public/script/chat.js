@@ -20,16 +20,19 @@ $(function () {
       console.log('init')
       $('.chat-btn').click(() => {
         let userName = $('.user-name').val()
-        let userImg = $('.my-por')[0].src
+        let userImg = $('.my-por').attr('src') || 'static/portrait/008.jpg'
+        // let userImg = $('.my-por')[0].src
         this.login(userName, userImg)
       })
       this.setClickEvent()
     },
     setClickEvent () {
       $('.group-chat-wrap').css('display', 'none')
-
-      $('.select').click(() => {
+      // ev是 .select对象，获取到里面的触发对象<img>要使用ev.target获取
+      $('.select').click((ev) => {
         console.log('select click')
+        console.log(ev.target)
+        $('.my-por').attr('src', $(ev.target).prop('src'))
       })
       $('.inp').keyup(ev => {
         // 回车事件
@@ -51,6 +54,12 @@ $(function () {
           ev.preventDefault? ev.preventDefault() : ev.returnValue = false
           this.sendMessageGroup()
         }
+      })
+      $('.emoji').click(ev => {
+        this.chooseEmoji(ev)
+      })
+      $('.emot').click(ev => {
+        this.chooseEmot(ev)
       })
     },
     
@@ -270,15 +279,27 @@ $(function () {
     },
 
     chooseEmoji (ev) {
-
+      hiddenBox()
+      let path = $(ev.target).prop('src')
+      if (this.tag) {
+        $('.group-chat-inp').html($('.group-chat-inp').html() + `<img src="${path}" style="width: 24px;height:24px;" />`)
+      } else  {
+        $('.inp').html($('.inp').html() + `<img src="${path}" style="width: 24px;height:24px;" />`)
+      }
     },
 
     chooseEmot (ev) {
-
+      hiddenBox()
+      let path = $(ev.target).prop('src')
+      if (this.tag) {
+        $('.group-chat-inp').html($('.group-chat-inp').html() + `<img src="${path}" style="width: 24px;height:24px;" />`)
+      } else  {
+        $('.inp').html($('.inp').html() + `<img src="${path}" style="width: 24px;height:24px;" />`)
+      }
     },
 
     setMyInfo () {
-      $('.my-info').append(`<div class="user-item" style="border-bottom: 1px solid #eee;margin-bottom: 30px;"><span>用户：${this.userName}</span></div>`)
+      $('.my-info').append(`<div class="user-item" style="border-bottom: 1px solid #eee;margin-bottom: 30px;"><img src="${this.userImg}" style="width:60px;height:60px;" /><span>用户：${this.userName}</span></div>`)
     },
     setMessageJson (data) {
       if (this.messageJson[data.sendId]) {
@@ -302,10 +323,11 @@ $(function () {
       this.messageJson[this.sendFriend].forEach(item => {
         if (item.sendId === this.id) {
           // 在messageJson里查找本人发送的消息
+          console.log(item.img)
           msg += `
             <div class="msg-box right">
               <div class="msg">${item.msg}</div>
-              <img src="${item.img} style="width: 60px;height: 60px;" />
+              <img src="${item.img}" style="width: 60px;height: 60px;" />
             </div>
           `
         } else {
@@ -394,6 +416,28 @@ $(function () {
         id: this.id,
         userName: this.userName,
       })
+    },
+    // 在 setClickEvent 方法中定义点击头像事件
+    /*
+    setUserImg (ev) {
+      console.log(ev)
+      // this.userImg = $(ev).prop('src')
+      $('.my-por').attr('src', $(ev).prop('src'))
+    },
+    */
+
+    showEmojiBox () {
+      $('.emoji').css('display', 'block')
+      $('.mask').css('display', 'block')
+    },
+    showEmotBox () {
+      $('.mask').css('display', 'block')
+      $('.emot').css('display', 'block')
+    },
+    hiddenBox () {
+      $('.emoji').css('display', 'none')
+      $('.emot').css('display', 'none')
+      $('.mask').css('display', 'none')
     }
 
   } // end Chat.prototype
@@ -401,19 +445,14 @@ $(function () {
   // common functions
   // 外部调用函数
   window.showEmojiBox = function () {
-    $('.emoji').css('display', 'block')
-    $('.mask').css('display', 'block')
+   chatInstance.showEmojiBox()
   }
   window.showEmotBox = function () {
-    $('.mask').css('display', 'block')
-    $('.emot').css('display', 'block')
+    chatInstance.showEmotBox()
   }
 
   window.hiddenBox = function () {
-    $('.emoji').css('display', 'none')
-    $('.emot').css('display', 'none')
-    $('.mask').css('display', 'none')
-
+    chatInstance.hiddenBox()
   }
 
   window.changeTab = function (cls, listCls, showGroupPanel) {
@@ -541,12 +580,35 @@ $(function () {
     chatInstance.exitGroupRoom(roomId)
   }
 
+  // window.setUserImg = function (ev) {
+  //   chatInstance.setUserImg(ev)
+  // }
   // common functions end
+  function initPortrait () {
+    for (let i = 0; i < 10; i++) {
+      $('#portrait').append(`<img src="static/portrait/00${i}.jpg"  style="width: 60px;height: 60px;" />`)
+      // $('#portrait').append(`<img src="static/portrait/00${i}.jpg" onclick="setUserImg(this)" style="width: 60px;height: 60px;" />`)
+    }
+  }
+  function initEmoji () {
+    for (let i = 0; i < 141; i++) {
+      $('.emoji').append(`<img src="static/emoticon/emoji/emoji (${i + 1}).png" style="width:30px;height:30px;" />`)
+    }
+  }
 
+  function initEmot () {
+    const emot = ['001.gif', '002.gif', '011.gif', '020.gif', '010.jpeg']
+    for (let i = 0; i < emot.length; i++) {
+      $('.emot').append(`<img src="static/emoticon/emot/${emot[i]}" style="width:30px;height:30px;" />`)
+    }
+  }
   // init object
   let chatInstance = new Chat()
   chatInstance.init()
-
+  
+  initPortrait()
+  initEmoji()
+  initEmot()
 })
 
 // 直接调用函数写在jquery外面 或者window.funcName = function () {}, 写在jquery里面
