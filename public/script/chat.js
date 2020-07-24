@@ -123,6 +123,32 @@ $(function () {
           info: data,
         })
       })
+      socket.on('chatGroupSystemNotice', data => {
+
+      })
+      socket.on('leaveChatGroup', data => {
+        
+        if (data.id === this.id) {
+          // 退出群聊的客户端重新绘制群聊列表
+          this.chatGroupList = this.chatGroupList.filter(item => item.roomId !== data.roomId)
+          this.drawChatGroupList()
+        } else  {
+          this.setMsgGroupJson(data)
+          if (this.tag) {
+            // 群聊面板
+            $('.me_' + data.roomId).html(parseInt($('.me_' + data.roomId).html()) + 1)
+            $('.me_' + data.roomId).css('display', 'block')
+            this.drawChatGroupMsgList()
+          } else {
+            // 单聊面板
+            $('.me-group-chat-tab').html(parseInt($('.me-group-chat-tab').html()) + 1)
+            $('.me-group-chat-tab').css('display', 'block')
+
+            $('.me_' + data.roomId).html(parseInt($('.me_' + data.roomId).html()) + 1)
+            $('.me_' + data.roomId).css('display', 'block')
+          }
+        }
+      })
     },
     // 单发送消息
     sendMessage () {
@@ -167,15 +193,60 @@ $(function () {
         // 在列表里显示其他用户
         if (item.id !== this.id) {
             str +=`<div class="user-item friend-item" onclick="changeChat(this)">
+              <img src="${item.userImg}" style="width:60px;height:60px;" />
               <span>${item.userName} ${item.id}</span>
+              <input type="hidden" value="${item.id}" >
+              <div class="circle me_${item.id}" style="display:none">0</div>
             </div>`
         }
       })
       $('.friends-info').html(str)
     },
-    changeChat () {
+    changeChat (ev) {
       console.log('changechat')
+      $('.message-default').css('display', 'none')
+      $('.message-wrapper').css('display', 'block')
+      console.log($(ev).children(1).text())
+      // console.log(ev)
+      $('.friend').html(ev.children[1].innerHTML)
+      $('.inp').focus()
+      // todo
+      
+      if ($(ev).children(2).text !== this.sendFriend) {
+        $('.message-box').html('')
+        $('.message-box').scrollTop(0)
+        this.sendFriend = $(ev).children(2).text
+
+        this.drawMessageList()
+
+        $('.me_' + this.sendFriend).html(0)
+        $('.me_' + this.sendFriend).css('display', 'none')
+      }
     },
+    changeChatGroup (ev) {
+      $('.group-chat-default').css('display', 'none')
+      $('.group-chat-group-box').css('display', 'block')
+      $('.chat-group-name').html(ev.children[0].innerHTML)
+      $('.group-chat-inp').focus()
+
+      $('.group-chat-box').html('')
+      $('.group-chat-box').scrollTop(0)
+      this.sendChatGroup = ev.children[1].value
+
+      this.drawChatGroupMsgList()
+
+      $('.me_' + this.sendChatGroup).html(0)
+      $('.me_' + this.sendChatGroup).css('display', 'none')
+    },
+
+    chooseEmoji (ev) {
+
+    },
+
+    chooseEmot (ev) {
+
+    },
+
     setMyInfo () {
       $('.my-info').append(`<div class="user-item" style="border-bottom: 1px solid #eee;margin-bottom: 30px;"><span>用户：${this.userName}</span></div>`)
     },
@@ -255,12 +326,36 @@ $(function () {
       $('.group-chat-box').scrollTop = $('.group-chat-box').scrollHeight
       $('.group-chat-inp').html('')
       $('.group-chat-inp').focus()
+    },
+
+    exitGroupRoom (roomId) {
+      socket.emit('exitGroupRoom', {
+        roomId: roomId,
+        id: this.id,
+        userName: this.userName,
+      })
     }
 
   } // end Chat.prototype
 
   // common functions
   // 外部调用函数
+  window.showEmojiBox = function () {
+    $('.emoji').css('display', 'block')
+    $('.mask').css('display', 'block')
+  }
+  window.showEmotBox = function () {
+    $('.mask').css('display', 'block')
+    $('.emot').css('display', 'block')
+  }
+
+  window.hiddenBox = function () {
+    $('.emoji').css('display', 'none')
+    $('.emot').css('display', 'none')
+    $('.mask').css('display', 'none')
+
+  }
+
   window.changeTab = function (cls, listCls, showGroupPanel) {
     chatInstance.tag = showGroupPanel
     if (showGroupPanel) {
@@ -375,7 +470,7 @@ $(function () {
     $('.chat-group-name-input').val('')
     chatInstance.chatGroupArr = []
   }
-  
+
   // html中调用的方法将property里的函数再封装一遍供外部调用
   window.changeChat = function (ev) {
     chatInstance.changeChat(ev)
@@ -383,7 +478,9 @@ $(function () {
 
   window.exitGroupRoom = function (roomId) {
     console.log('exitGroupRoom', roomId)
+    chatInstance.exitGroupRoom(roomId)
   }
+
   // common functions end
 
   // init object
