@@ -26,6 +26,8 @@ $(function () {
       this.setClickEvent()
     },
     setClickEvent () {
+      $('.group-chat-wrap').css('display', 'none')
+
       $('.select').click(() => {
         console.log('select click')
       })
@@ -91,6 +93,26 @@ $(function () {
 
       socket.on('receiveMsg', data => {
         console.log('receiveMsg')
+        this.setMessageJson(data)
+
+        if (this.tag) {
+          // 当前在群聊面板收到了单人聊天消息
+          $('.me-friend-tab').html(parseInt($('.me-friend-tab').html()) + 1)
+          $('.me-friend-tab').css('display', 'block')
+
+          // 好友列表中对应好友提示新消息
+          $('.me_' + data.sendId).html(parseInt($('.me_' + data.sendId).html()) + 1)
+          $('.me_' + data.sendId).css('display', 'block')
+        } else {
+          if (data.sendId === this.sendFriend) {
+            // 当前已打开聊天人对话框
+            this.drawMessageList()
+          } else  {
+            // 和其他人聊天中
+            $('.me_' + data.sendId).html(parseInt($('.me_' + data.sendId).html()) + 1)
+            $('.me_' + data.sendId).css('display', 'block')
+          }
+        }
       }),
       socket.on('receiveMsgGroup', data => {
         console.log('receiveMsgGroup', data)
@@ -160,10 +182,17 @@ $(function () {
           id: this.sendFriend,
           userName: this.userName,
           img: this.userImg,
-          msg: $('.inputDiv').val()
+          msg: $('.inp').text()
         }
         socket.emit('sendMsg', info)
         // todo
+        // 设置聊天消息列表数据
+        if (this.messageJson[this.sendFriend]) {
+          this.messageJson[this.sendFriend].push(info)
+        } else  {
+          this.messageJson[this.sendFriend] = [info]
+        }
+
         this.drawMessageList()
       }
     },
@@ -206,17 +235,18 @@ $(function () {
       console.log('changechat')
       $('.message-default').css('display', 'none')
       $('.message-wrapper').css('display', 'block')
-      console.log($(ev).children(1).text())
       // console.log(ev)
       $('.friend').html(ev.children[1].innerHTML)
       $('.inp').focus()
+
       // todo
-      
-      if ($(ev).children(2).text !== this.sendFriend) {
+      if ($(ev).children('input').val() !== this.sendFriend) { // 第二项为用户id
+        
         $('.message-box').html('')
         $('.message-box').scrollTop(0)
-        this.sendFriend = $(ev).children(2).text
-
+        this.sendFriend = $(ev).children('input').val()
+        // this.sendFriend = ev.children[1].text
+        console.log(this.sendFriend)
         this.drawMessageList()
 
         $('.me_' + this.sendFriend).html(0)
@@ -266,7 +296,37 @@ $(function () {
     },
     drawMessageList () {
       let msg = ''
+      if (!this.messageJson[this.sendFriend]) {
+        return
+      }
+      this.messageJson[this.sendFriend].forEach(item => {
+        if (item.sendId === this.id) {
+          // 在messageJson里查找本人发送的消息
+          msg += `
+            <div class="msg-box right">
+              <div class="msg">${item.msg}</div>
+              <img src="${item.img} style="width: 60px;height: 60px;" />
+            </div>
+          `
+        } else {
+          // 在messageJson里查找对方发送的消息
+          msg += `
+            <div class="msg-box left">
+              <img src="${item.img}" style="width:60px;height:60px;" />
+              <div class="msg">${item.msg}</div>
+            </div>
+          `
+        }
+      })
 
+      // 显示消息信息
+      console.log(msg)
+      $('.message-box').html(msg)
+      console.log($('.message-box').prop('scrollHeight'))
+      $('.message-box').scrollTop($('.message-box').prop('scrollHeight'))
+
+      $('.inp').html('')
+      $('.inp').focus()
     },
     drawChatGroupList () {
       console.log('drawChatGroupList', this.chatGroupList.length)
