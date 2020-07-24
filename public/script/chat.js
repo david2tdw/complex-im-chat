@@ -139,7 +139,7 @@ $(function () {
           // 当前在个人聊天页面，群聊提示新消息  并且群聊列表中对应群聊提示新消息
           $('.me-group-chat-tab').html(parseInt($('.me-group-chat-tab').html()) + 1).css('display', 'block')
 
-          $('.me_' + data.roomId).html(parseInt($('.me_'+ data.roomId)) + 1).css('display', 'block')
+          $('.me_' + data.roomId).html(parseInt($('.me_'+ data.roomId).html()) + 1).css('display', 'block')
         }
       })
       // 把新创建的组加入群聊组列表
@@ -353,6 +353,7 @@ $(function () {
     drawChatGroupList () {
       console.log('drawChatGroupList', this.chatGroupList.length)
       if (this.chatGroupList.length > 0) {
+        console.log('drawChatGroupList if')
         $('.now-select').css('display', 'none')
         $('.create-group').css('display', 'none')
         $('.select-chat-group').css('display', 'none')
@@ -370,6 +371,7 @@ $(function () {
         })
         $('.chat-group-list').html(str)
       } else {
+        console.log('drawChatGroupList else')
         $('.now-select').css('display', 'block')
         $('.create-group').css('display', 'block')
         $('.select-chat-group').css('display', 'block')
@@ -398,7 +400,7 @@ $(function () {
         } else {
           msg += `
             <div class="msg-box left">
-              <img src="${item.img} style="width:60px;height:60px;">
+              <img src="${item.img}" style="width:60px;height:60px;">
               <div class="msg">${item.msg}</div>
             </div>
           `

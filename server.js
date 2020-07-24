@@ -4,6 +4,7 @@ const server = require('http').Server(app)
 
 const io = require('socket.io')(server)
 
+// 路由为/ , 默认静态文件夹
 app.use('/', express.static(__dirname + '/public' ))
 
 let userList = []
@@ -79,9 +80,6 @@ io.on('connection', socket => {
     // 通知其他人
     socket.broadcast.emit('quit', socket.id)
   })
-
-  
-
 
 })
 
